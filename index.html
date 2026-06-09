@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>LOGIC FRAME — Susun Bata</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
@@ -10,182 +10,246 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:      #07070f;
-      --panel:   #0d0d1c;
-      --border:  #1a1a32;
-      --accent:  #4455ee;
-      --txt:     #aaaadd;
-      --dim:     #3a3a66;
+      --bg:     #07070f;
+      --panel:  #0d0d1c;
+      --border: #1a1a32;
+      --accent: #4455ee;
+      --txt:    #aaaadd;
+      --dim:    #3a3a66;
     }
 
     body {
       background: var(--bg);
       background-image:
-        radial-gradient(ellipse at 15% 15%, rgba(55,0,110,0.22) 0%, transparent 55%),
-        radial-gradient(ellipse at 85% 85%, rgba(0,35,100,0.22) 0%, transparent 55%);
+        radial-gradient(ellipse at 15% 15%, rgba(55,0,110,.22) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 85%, rgba(0,35,100,.22) 0%, transparent 55%);
       color: var(--txt);
       font-family: 'Press Start 2P', monospace, sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       min-height: 100vh;
+      min-height: 100dvh;
+      padding: 12px 10px 16px;
       user-select: none;
-      padding: 16px;
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    /* ── Header ─────────────────────────────────────────── */
-    header { text-align: center; margin-bottom: 18px; }
+    /* ── Header ───────────────────────────────────────────── */
+    header { text-align: center; margin-bottom: 16px; flex-shrink: 0; }
     header h1 {
-      font-size: clamp(0.75rem, 2.4vw, 1.35rem);
-      letter-spacing: 0.45em;
+      font-size: clamp(.65rem, 2.2vw, 1.3rem);
+      letter-spacing: .45em;
       color: #fff;
       text-shadow: 0 0 10px #4466ff, 0 0 28px #4466ff;
     }
     header p {
-      font-size: clamp(0.32rem, 0.9vw, 0.46rem);
-      letter-spacing: 0.65em;
+      font-size: clamp(.28rem, .85vw, .43rem);
+      letter-spacing: .65em;
       color: var(--dim);
-      margin-top: 7px;
+      margin-top: 6px;
     }
 
-    /* ── Main layout ─────────────────────────────────────── */
-    .wrapper { display: flex; gap: 16px; align-items: flex-start; }
+    /* ── Desktop wrapper ──────────────────────────────────── */
+    .wrapper { display: flex; gap: 14px; align-items: flex-start; }
 
-    /* ── Side panels ─────────────────────────────────────── */
+    /* ── Side panels (desktop) ───────────────────────────── */
     .panel {
       background: var(--panel);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 14px;
-      width: 128px;
+      padding: 12px;
+      width: 124px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 11px;
     }
-
-    .lbl {
-      font-size: 0.38rem;
-      letter-spacing: 0.2em;
-      color: var(--dim);
-      margin-bottom: 5px;
-    }
-    .val {
-      font-size: clamp(0.65rem, 1.8vw, 0.95rem);
-      color: #fff;
-      text-shadow: 0 0 8px #4466ff;
-      min-height: 1.1em;
-    }
+    .lbl { font-size: .36rem; letter-spacing: .2em; color: var(--dim); margin-bottom: 4px; }
+    .val { font-size: clamp(.6rem, 1.7vw, .9rem); color: #fff; text-shadow: 0 0 8px #4466ff; min-height: 1em; }
     hr.sep { border: none; border-top: 1px solid var(--border); }
 
-    /* ── Canvas area ─────────────────────────────────────── */
-    .cvs-wrap { position: relative; flex-shrink: 0; }
+    /* ── Center column ────────────────────────────────────── */
+    #centerCol { display: flex; flex-direction: column; align-items: center; gap: 8px; }
 
+    /* ── Canvas ───────────────────────────────────────────── */
+    .cvs-wrap { position: relative; flex-shrink: 0; }
     #gameCanvas {
       display: block;
       border: 2px solid var(--border);
       border-radius: 4px;
-      box-shadow: 0 0 28px rgba(68,68,221,0.18), inset 0 0 30px rgba(0,0,0,0.55);
+      box-shadow: 0 0 28px rgba(68,68,221,.18), inset 0 0 28px rgba(0,0,0,.55);
+      touch-action: none;
     }
-
-    /* ── Overlay ─────────────────────────────────────────── */
-    #overlay {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 18px;
-      background: rgba(7,7,15,0.90);
-      border-radius: 3px;
-      backdrop-filter: blur(4px);
-    }
-    #overlay h2 {
-      font-size: clamp(0.65rem, 2.2vw, 0.95rem);
-      letter-spacing: 0.18em;
-      text-align: center;
-      text-shadow: 0 0 14px #fff;
-    }
-    #overlay .sub {
-      font-size: 0.42rem;
-      color: var(--dim);
-      text-align: center;
-      line-height: 2.1;
-    }
-    #overlay .final {
-      font-size: 0.6rem;
-      color: #ffd700;
-      text-shadow: 0 0 10px #ffd700;
-    }
-
-    /* ── Buttons ─────────────────────────────────────────── */
-    .btn {
-      font-family: 'Press Start 2P', monospace;
-      font-size: 0.52rem;
-      padding: 10px 22px;
-      background: transparent;
-      border: 2px solid var(--accent);
-      color: #fff;
-      border-radius: 4px;
-      cursor: pointer;
-      letter-spacing: 0.1em;
-      transition: background 0.15s, box-shadow 0.15s;
-      text-shadow: 0 0 6px var(--accent);
-      box-shadow: 0 0 8px rgba(68,68,221,0.28);
-    }
-    .btn:hover  { background: var(--accent); box-shadow: 0 0 18px var(--accent); }
-    .btn:active { transform: scale(0.97); }
-
-    /* ── Next piece canvas ───────────────────────────────── */
-    #nextCvs { display: block; margin-top: 6px; background: #0a0a14; border-radius: 3px; }
-
-    /* ── Controls table ──────────────────────────────────── */
-    .ctrl { font-size: 0.36rem; color: var(--dim); line-height: 2.4; }
-    .ctrl kbd {
-      font-family: 'Press Start 2P', monospace;
-      font-size: 0.34rem;
-      background: var(--border);
-      border: 1px solid var(--dim);
-      border-radius: 3px;
-      padding: 1px 4px;
-      color: var(--txt);
-    }
-
-    /* ── Pause notice ────────────────────────────────────── */
-    #pauseNote {
-      font-size: 0.38rem;
-      color: #ffd700;
-      text-align: center;
-      text-shadow: 0 0 8px #ffd700;
-      display: none;
-    }
-    #pauseNote.on  { display: block; }
-    #pauseBtn      { display: none; }
-    #pauseBtn.on   { display: block; }
-
-    /* ── Score flash animation ───────────────────────────── */
-    @keyframes pop {
-      0%   { transform: scale(1); }
-      50%  { transform: scale(1.18); color: #ffd700; text-shadow: 0 0 12px #ffd700; }
-      100% { transform: scale(1); }
-    }
-    .pop { animation: pop 0.35s ease; }
-
-    /* ── Scanline overlay ────────────────────────────────── */
+    /* Scanlines */
     .cvs-wrap::after {
       content: '';
       position: absolute;
       inset: 0;
       background: repeating-linear-gradient(
-        to bottom,
-        transparent 0px,
-        transparent 2px,
-        rgba(0,0,0,0.06) 2px,
-        rgba(0,0,0,0.06) 4px
+        to bottom, transparent 0, transparent 2px,
+        rgba(0,0,0,.06) 2px, rgba(0,0,0,.06) 4px
       );
       pointer-events: none;
       border-radius: 3px;
+    }
+
+    /* ── Overlay ──────────────────────────────────────────── */
+    #overlay {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 16px;
+      background: rgba(7,7,15,.90);
+      border-radius: 3px;
+      backdrop-filter: blur(4px);
+    }
+    #overlay h2 {
+      font-size: clamp(.55rem, 1.9vw, .9rem);
+      letter-spacing: .18em; text-align: center;
+      text-shadow: 0 0 14px #fff;
+    }
+    #overlay .sub  { font-size: .4rem; color: var(--dim); text-align: center; line-height: 2.1; }
+    #overlay .final { font-size: .58rem; color: #ffd700; text-shadow: 0 0 10px #ffd700; }
+
+    /* ── Buttons ──────────────────────────────────────────── */
+    .btn {
+      font-family: 'Press Start 2P', monospace;
+      font-size: .5rem;
+      padding: 9px 20px;
+      background: transparent;
+      border: 2px solid var(--accent);
+      color: #fff; border-radius: 4px;
+      cursor: pointer; letter-spacing: .1em;
+      transition: background .15s, box-shadow .15s;
+      text-shadow: 0 0 6px var(--accent);
+      box-shadow: 0 0 8px rgba(68,68,221,.28);
+      touch-action: manipulation;
+    }
+    .btn:hover  { background: var(--accent); box-shadow: 0 0 18px var(--accent); }
+    .btn:active { transform: scale(.97); }
+
+    /* ── Next piece canvases ──────────────────────────────── */
+    .ncvs { display: block; background: #090912; border-radius: 3px; }
+    #ncvsD { margin-top: 5px; }
+
+    /* ── Desktop controls table ───────────────────────────── */
+    .ctrl { font-size: .33rem; color: var(--dim); line-height: 2.3; }
+    .ctrl kbd {
+      font-family: 'Press Start 2P', monospace;
+      font-size: .32rem;
+      background: var(--border);
+      border: 1px solid var(--dim);
+      border-radius: 3px; padding: 1px 4px; color: var(--txt);
+    }
+
+    /* ── Desktop pause note ───────────────────────────────── */
+    #pauseNote {
+      font-size: .36rem; color: #ffd700;
+      text-align: center; text-shadow: 0 0 8px #ffd700; display: none;
+    }
+    #pauseNote.on { display: block; }
+    #pauseBtn     { display: none; }
+    #pauseBtn.on  { display: block; }
+
+    /* ── Score pop animation ──────────────────────────────── */
+    @keyframes pop {
+      0%,100% { transform: scale(1); }
+      50% { transform: scale(1.2); color: #ffd700; text-shadow: 0 0 14px #ffd700; }
+    }
+    .pop { animation: pop .35s ease; }
+
+    /* ═══════════════════════════════════════════════════════
+       MOBILE  (≤ 599 px)
+       ═══════════════════════════════════════════════════════ */
+    .mob-only { display: none; }
+
+    @media (max-width: 599px) {
+      body { padding: 8px 8px 12px; justify-content: flex-start; }
+      header { margin-bottom: 8px; }
+      header h1 { font-size: clamp(.6rem, 5vw, .95rem); }
+      header p  { font-size: clamp(.25rem, 2.2vw, .36rem); margin-top: 4px; }
+
+      .wrapper  { flex-direction: column; align-items: center; gap: 7px; width: 100%; }
+      .dp-only  { display: none !important; }
+      .mob-only { display: flex; }
+
+      /* Mobile HUD row */
+      #mHud {
+        flex-direction: row;
+        align-items: center;
+        gap: 6px;
+        width: 100%;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        padding: 6px 8px;
+      }
+      .m-stats { display: flex; gap: 6px; flex: 1; }
+      .m-stat  { display: flex; flex-direction: column; align-items: center; flex: 1; }
+      .m-stat .lbl { font-size: .22rem; letter-spacing: .06em; }
+      .m-stat .val { font-size: clamp(.48rem, 3.4vw, .68rem); min-height: auto; }
+      .m-next {
+        display: flex; flex-direction: column; align-items: center;
+        border-left: 1px solid var(--border);
+        padding-left: 8px; flex-shrink: 0;
+      }
+      .m-next .lbl { font-size: .22rem; margin-bottom: 2px; }
+
+      /* Touch control pad */
+      #touchCtrls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+        width: 100%;
+        padding: 2px 0 4px;
+      }
+      .tc-row { display: flex; gap: 5px; }
+
+      .tc-btn {
+        font-family: 'Press Start 2P', monospace;
+        font-size: clamp(.36rem, 2.7vw, .5rem);
+        background: var(--panel);
+        border: 2px solid var(--border);
+        color: var(--txt);
+        border-radius: 7px;
+        cursor: pointer;
+        flex: 1;
+        padding: 13px 4px;
+        letter-spacing: .04em;
+        min-height: 50px;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+        transition: background .07s, border-color .07s, color .07s;
+      }
+      .tc-btn:active, .tc-btn.held {
+        background: rgba(68,85,238,.25);
+        border-color: var(--accent);
+        color: #fff;
+      }
+      /* Hard-drop button gets orange tint */
+      .tc-drop { border-color: rgba(255,140,0,.5); color: #ff8c00; }
+      .tc-drop:active, .tc-drop.held {
+        background: rgba(255,140,0,.2);
+        border-color: #ff8c00;
+        color: #fff;
+      }
+      /* Pause/continue button — smaller, muted */
+      .tc-pause {
+        border-color: var(--dim); color: var(--dim);
+        font-size: clamp(.3rem, 2.2vw, .4rem);
+        padding: 10px; min-height: 40px;
+      }
+      .tc-pause:active, .tc-pause.held {
+        background: rgba(255,255,255,.07);
+        border-color: var(--txt); color: var(--txt);
+      }
+    }
+
+    /* Very small phones */
+    @media (max-width: 340px) {
+      .tc-btn { font-size: .3rem; padding: 10px 2px; min-height: 44px; }
     }
   </style>
 </head>
@@ -198,8 +262,8 @@
 
 <div class="wrapper">
 
-  <!-- ── Left panel ───────────────────────────────────── -->
-  <div class="panel">
+  <!-- LEFT PANEL — desktop only ─────────────────────── -->
+  <div class="panel dp-only">
     <div>
       <div class="lbl">SKOR</div>
       <div class="val" id="vScore">0</div>
@@ -224,22 +288,72 @@
     <button class="btn" id="pauseBtn" onclick="togglePause()">JEDA</button>
   </div>
 
-  <!-- ── Game canvas ──────────────────────────────────── -->
-  <div class="cvs-wrap">
-    <canvas id="gameCanvas"></canvas>
-    <div id="overlay">
-      <h2 id="oTitle">LOGIC FRAME</h2>
-      <div class="sub" id="oSub">Tekan MULAI<br>untuk bermain</div>
-      <div class="final" id="oFinal" style="display:none"></div>
-      <button class="btn" id="oBtn" onclick="startGame()">MULAI</button>
-    </div>
-  </div>
+  <!-- CENTER COLUMN ─────────────────────────────────── -->
+  <div id="centerCol">
 
-  <!-- ── Right panel ──────────────────────────────────── -->
-  <div class="panel">
+    <!-- Mobile HUD — mobile only -->
+    <div id="mHud" class="mob-only">
+      <div class="m-stats">
+        <div class="m-stat">
+          <div class="lbl">SKOR</div>
+          <div class="val" id="mScore">0</div>
+        </div>
+        <div class="m-stat">
+          <div class="lbl">LVL</div>
+          <div class="val" id="mLevel">1</div>
+        </div>
+        <div class="m-stat">
+          <div class="lbl">BARIS</div>
+          <div class="val" id="mLines">0</div>
+        </div>
+        <div class="m-stat">
+          <div class="lbl">HI</div>
+          <div class="val" id="mHi">0</div>
+        </div>
+      </div>
+      <div class="m-next">
+        <div class="lbl">NEXT</div>
+        <canvas id="ncvsM" class="ncvs"></canvas>
+      </div>
+    </div>
+
+    <!-- Game canvas -->
+    <div class="cvs-wrap">
+      <canvas id="gameCanvas"></canvas>
+      <div id="overlay">
+        <h2 id="oTitle">LOGIC FRAME</h2>
+        <div class="sub" id="oSub">Tekan MULAI<br>untuk bermain</div>
+        <div class="final" id="oFinal" style="display:none"></div>
+        <button class="btn" id="oBtn" onclick="startGame()">MULAI</button>
+      </div>
+    </div>
+
+    <!-- Touch control pad — mobile only -->
+    <div id="touchCtrls" class="mob-only">
+      <!-- Row 1: move + rotate -->
+      <div class="tc-row">
+        <button class="tc-btn" id="tcLeft">◄ KIRI</button>
+        <button class="tc-btn" id="tcRot">▲ PUTAR</button>
+        <button class="tc-btn" id="tcRight">KANAN ►</button>
+      </div>
+      <!-- Row 2: soft drop + hard drop -->
+      <div class="tc-row">
+        <button class="tc-btn" id="tcDown">▼ TURUN</button>
+        <button class="tc-btn tc-drop" id="tcDrop">⬇ JATUH</button>
+      </div>
+      <!-- Row 3: pause -->
+      <div class="tc-row">
+        <button class="tc-btn tc-pause" id="tcPause">⏸ &nbsp; JEDA / LANJUT</button>
+      </div>
+    </div>
+
+  </div><!-- #centerCol -->
+
+  <!-- RIGHT PANEL — desktop only ────────────────────── -->
+  <div class="panel dp-only">
     <div>
       <div class="lbl">BERIKUTNYA</div>
-      <canvas id="nextCvs" width="108" height="86"></canvas>
+      <canvas id="ncvsD" class="ncvs"></canvas>
     </div>
     <hr class="sep">
     <div>
@@ -271,12 +385,26 @@
 "use strict";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-const COLS = 10;
-const ROWS = 20;
-const BS   = 30;   // block size (px)
-const GAP  = 1;    // gap between adjacent blocks
+const COLS     = 10;
+const ROWS     = 20;
+const GAP      = 1;
+const LINE_PTS = [0, 100, 300, 500, 800];
 
-// Tetrominoes — shape matrices use 1 = block, 0 = empty
+// ─── Calculate block size from viewport ───────────────────────────────────────
+// On desktop (≥600 px wide) always use 30 px.
+// On mobile estimate the space left after header (~52px), mobile HUD (~52px),
+// touch pad (~130px) and padding (~46px) ≈ 280px overhead total.
+function calcBS() {
+  if (window.innerWidth >= 600) return 30;
+  const availH = window.innerHeight - 285;
+  const availW = window.innerWidth  - 20;
+  const byH    = Math.floor(availH / ROWS);
+  const byW    = Math.floor(availW / COLS);
+  return Math.max(16, Math.min(26, byH, byW));
+}
+const BS = calcBS();
+
+// ─── Tetrominoes ──────────────────────────────────────────────────────────────
 const PIECES = [
   { id:'I', clr:'#00e5ff', shape:[[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]] },
   { id:'O', clr:'#ffd600', shape:[[1,1],[1,1]] },
@@ -287,32 +415,38 @@ const PIECES = [
   { id:'L', clr:'#ffab40', shape:[[0,0,1],[1,1,1],[0,0,0]] },
 ];
 
-const LINE_PTS = [0, 100, 300, 500, 800];  // points per lines-cleared count
-
-// ─── Canvas / context ─────────────────────────────────────────────────────────
-const cvs  = document.getElementById('gameCanvas');
-const ctx  = cvs.getContext('2d');
-const ncvs = document.getElementById('nextCvs');
-const nctx = ncvs.getContext('2d');
-
+// ─── Canvas setup ─────────────────────────────────────────────────────────────
+const cvs = document.getElementById('gameCanvas');
+const ctx = cvs.getContext('2d');
 cvs.width  = COLS * BS;
 cvs.height = ROWS * BS;
 
-// ─── Game state ───────────────────────────────────────────────────────────────
-let board;        // ROWS × COLS array of color strings (null = empty)
-let cur;          // current falling piece  { p, shape, x, y }
-let nxt;          // next piece
+// Desktop next-piece canvas
+const ncvsD  = document.getElementById('ncvsD');
+const nctxD  = ncvsD.getContext('2d');
+const nbD    = Math.floor(BS * 0.85);
+ncvsD.width  = Math.round(nbD * 4.5);
+ncvsD.height = Math.round(nbD * 3.5);
+
+// Mobile next-piece canvas (smaller)
+const ncvsM  = document.getElementById('ncvsM');
+const nctxM  = ncvsM.getContext('2d');
+const nbM    = Math.max(10, Math.floor(BS * 0.64));
+ncvsM.width  = nbM * 4 + 4;
+ncvsM.height = nbM * 3 + 4;
+
+// Align center column to canvas width so mobile HUD/pad stretch flush
+document.getElementById('centerCol').style.width = cvs.width + 'px';
+
+// ─── State ────────────────────────────────────────────────────────────────────
+let board, cur, nxt;
 let score, hiScore, level, lineCount;
 let running, paused;
 let dropTimer;
-let prevLevel;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const $ = id => document.getElementById(id);
-
-function makeBoard() {
-  return Array.from({ length: ROWS }, () => new Array(COLS).fill(null));
-}
+const makeBoard = () => Array.from({length: ROWS}, () => new Array(COLS).fill(null));
 
 function randPiece() {
   const p = PIECES[Math.floor(Math.random() * PIECES.length)];
@@ -326,12 +460,11 @@ function randPiece() {
 
 function rotateCW(shape) {
   const R = shape.length, C = shape[0].length;
-  return Array.from({ length: C }, (_, c) =>
-    Array.from({ length: R }, (_, r) => shape[R - 1 - r][c])
+  return Array.from({length: C}, (_, c) =>
+    Array.from({length: R}, (_, r) => shape[R - 1 - r][c])
   );
 }
 
-// Returns true if shape at offset (ox, oy) collides with walls or placed blocks
 function hits(shape, ox, oy) {
   for (let r = 0; r < shape.length; r++)
     for (let c = 0; c < shape[r].length; c++) {
@@ -343,43 +476,29 @@ function hits(shape, ox, oy) {
   return false;
 }
 
-function dropSpeed() {
-  // 800 ms at level 1, −65 ms per level, floor 80 ms
-  return Math.max(80, 800 - (level - 1) * 65);
-}
+const dropSpeed = () => Math.max(80, 800 - (level - 1) * 65);
 
-// ─── Rendering ────────────────────────────────────────────────────────────────
-function drawBlock(ctx2d, x, y, color, alpha) {
+// ─── Drawing ──────────────────────────────────────────────────────────────────
+function drawBlock(cx, x, y, color, alpha) {
   alpha = alpha === undefined ? 1 : alpha;
-  const px = x * BS + GAP;
-  const py = y * BS + GAP;
-  const sz = BS - GAP * 2;
-
-  ctx2d.save();
-  ctx2d.globalAlpha = alpha;
-
-  // Main fill
-  ctx2d.fillStyle = color;
-  ctx2d.fillRect(px, py, sz, sz);
-
-  // Top & left bevel (highlight)
-  ctx2d.fillStyle = 'rgba(255,255,255,0.32)';
-  ctx2d.fillRect(px,      py,      sz, 3);
-  ctx2d.fillRect(px,      py,      3,  sz);
-
-  // Bottom & right bevel (shadow)
-  ctx2d.fillStyle = 'rgba(0,0,0,0.42)';
-  ctx2d.fillRect(px,      py + sz - 3, sz, 3);
-  ctx2d.fillRect(px + sz - 3, py,      3,  sz);
-
-  // Glow outline
-  ctx2d.shadowColor = color;
-  ctx2d.shadowBlur  = 10;
-  ctx2d.strokeStyle = color;
-  ctx2d.lineWidth   = 0.5;
-  ctx2d.strokeRect(px + 0.5, py + 0.5, sz - 1, sz - 1);
-
-  ctx2d.restore();
+  const px = x * BS + GAP, py = y * BS + GAP, sz = BS - GAP * 2;
+  const bv = Math.max(2, Math.floor(sz * 0.1));   // bevel thickness
+  cx.save();
+  cx.globalAlpha = alpha;
+  cx.fillStyle = color;
+  cx.fillRect(px, py, sz, sz);
+  cx.fillStyle = 'rgba(255,255,255,.30)';
+  cx.fillRect(px,      py,      sz, bv);
+  cx.fillRect(px,      py,      bv, sz);
+  cx.fillStyle = 'rgba(0,0,0,.42)';
+  cx.fillRect(px,      py + sz - bv, sz, bv);
+  cx.fillRect(px + sz - bv, py,      bv, sz);
+  cx.shadowColor = color;
+  cx.shadowBlur  = 8;
+  cx.strokeStyle = color;
+  cx.lineWidth   = 0.5;
+  cx.strokeRect(px + .5, py + .5, sz - 1, sz - 1);
+  cx.restore();
 }
 
 function drawGhost() {
@@ -387,88 +506,85 @@ function drawGhost() {
   let gy = cur.y;
   while (!hits(cur.shape, cur.x, gy + 1)) gy++;
   if (gy === cur.y) return;
-  for (let r = 0; r < cur.shape.length; r++)
-    for (let c = 0; c < cur.shape[r].length; c++)
-      if (cur.shape[r][c])
-        drawBlock(ctx, cur.x + c, gy + r, cur.p.clr, 0.14);
+  cur.shape.forEach((row, r) => row.forEach((v, c) => {
+    if (v) drawBlock(ctx, cur.x + c, gy + r, cur.p.clr, 0.13);
+  }));
 }
 
 function render() {
-  // Board background
   ctx.fillStyle = '#090912';
   ctx.fillRect(0, 0, cvs.width, cvs.height);
-
-  // Subtle dot grid
-  ctx.fillStyle = 'rgba(255,255,255,0.035)';
+  // Dot grid
+  ctx.fillStyle = 'rgba(255,255,255,.035)';
   for (let r = 0; r < ROWS; r++)
     for (let c = 0; c < COLS; c++)
       ctx.fillRect(c * BS + BS / 2, r * BS + BS / 2, 1.5, 1.5);
-
   // Placed blocks
   for (let r = 0; r < ROWS; r++)
     for (let c = 0; c < COLS; c++)
       if (board[r][c]) drawBlock(ctx, c, r, board[r][c]);
-
-  // Ghost piece
   drawGhost();
-
-  // Current piece
+  // Active piece
   if (cur)
-    for (let r = 0; r < cur.shape.length; r++)
-      for (let c = 0; c < cur.shape[r].length; c++)
-        if (cur.shape[r][c] && cur.y + r >= 0)
-          drawBlock(ctx, cur.x + c, cur.y + r, cur.p.clr);
+    cur.shape.forEach((row, r) => row.forEach((v, c) => {
+      if (v && cur.y + r >= 0) drawBlock(ctx, cur.x + c, cur.y + r, cur.p.clr);
+    }));
 }
 
-function renderNext() {
-  nctx.fillStyle = '#090912';
-  nctx.fillRect(0, 0, ncvs.width, ncvs.height);
+function drawNextOn(cx, cw, ch, nb) {
+  cx.fillStyle = '#090912';
+  cx.fillRect(0, 0, cw, ch);
   if (!nxt) return;
   const sh = nxt.p.shape;
-  const nb = 22;
-  const ox = Math.floor((ncvs.width  - sh[0].length * nb) / 2);
-  const oy = Math.floor((ncvs.height - sh.length    * nb) / 2);
+  const ox = Math.floor((cw - sh[0].length * nb) / 2);
+  const oy = Math.floor((ch - sh.length    * nb) / 2);
   sh.forEach((row, r) => row.forEach((v, c) => {
     if (!v) return;
-    const px = ox + c * nb + 1;
-    const py = oy + r * nb + 1;
-    const sz = nb - 2;
-    nctx.save();
-    nctx.fillStyle = nxt.p.clr;
-    nctx.fillRect(px, py, sz, sz);
-    nctx.fillStyle = 'rgba(255,255,255,0.28)';
-    nctx.fillRect(px, py, sz, 3);
-    nctx.shadowColor = nxt.p.clr;
-    nctx.shadowBlur  = 8;
-    nctx.strokeStyle = nxt.p.clr;
-    nctx.lineWidth   = 0.6;
-    nctx.strokeRect(px + 0.5, py + 0.5, sz - 1, sz - 1);
-    nctx.restore();
+    const px = ox + c * nb + 1, py = oy + r * nb + 1, sz = nb - 2;
+    cx.save();
+    cx.fillStyle = nxt.p.clr;
+    cx.fillRect(px, py, sz, sz);
+    cx.fillStyle = 'rgba(255,255,255,.28)';
+    cx.fillRect(px, py, sz, Math.max(1, Math.floor(sz * .12)));
+    cx.shadowColor = nxt.p.clr;
+    cx.shadowBlur  = 6;
+    cx.strokeStyle = nxt.p.clr;
+    cx.lineWidth   = 0.6;
+    cx.strokeRect(px + .5, py + .5, sz - 1, sz - 1);
+    cx.restore();
   }));
 }
 
+function renderNext() {
+  drawNextOn(nctxD, ncvsD.width, ncvsD.height, nbD);
+  drawNextOn(nctxM, ncvsM.width, ncvsM.height, nbM);
+}
+
 // ─── HUD ──────────────────────────────────────────────────────────────────────
+function setEl(id, v) { const e = $(id); if (e) e.textContent = v; }
+
 function updateHUD() {
-  $('vScore').textContent = score.toLocaleString('id-ID');
-  $('vLevel').textContent = level;
-  $('vLines').textContent = lineCount;
+  const f = n => n.toLocaleString('id-ID');
+  setEl('vScore', f(score));   setEl('mScore', f(score));
+  setEl('vLevel', level);      setEl('mLevel', level);
+  setEl('vLines', lineCount);  setEl('mLines', lineCount);
   if (score > hiScore) {
     hiScore = score;
     try { localStorage.setItem('lf_hi', String(hiScore)); } catch (_) {}
   }
-  $('vHi').textContent = hiScore.toLocaleString('id-ID');
+  setEl('vHi', f(hiScore));    setEl('mHi', f(hiScore));
 }
 
-function popAnim(elId) {
-  const el = $(elId);
-  el.classList.remove('pop');
-  void el.offsetWidth;   // reflow to restart animation
-  el.classList.add('pop');
+function popAnim(id) {
+  const e = $(id);
+  if (!e) return;
+  e.classList.remove('pop');
+  void e.offsetWidth;
+  e.classList.add('pop');
 }
 
 // ─── Mechanics ────────────────────────────────────────────────────────────────
 function lock() {
-  // Write current piece into the board
   for (let r = 0; r < cur.shape.length; r++)
     for (let c = 0; c < cur.shape[r].length; c++) {
       if (!cur.shape[r][c]) continue;
@@ -487,24 +603,17 @@ function sweep() {
       board.splice(r, 1);
       board.unshift(new Array(COLS).fill(null));
       cleared++;
-      r++;  // re-examine same index (now holds the row that was above)
+      r++;
     }
   }
-  if (cleared === 0) return;
-
+  if (!cleared) return;
   score     += LINE_PTS[cleared] * level;
   lineCount += cleared;
-
-  const newLevel = Math.floor(lineCount / 10) + 1;
-  if (newLevel !== level) {
-    level = newLevel;
-    prevLevel = level;
-    restartTimer();   // faster speed
-  }
-
+  const nl = Math.floor(lineCount / 10) + 1;
+  if (nl !== level) { level = nl; restartTimer(); }
   updateHUD();
-  popAnim('vScore');
-  if (cleared >= 4) popAnim('vLines');
+  popAnim('vScore'); popAnim('mScore');
+  if (cleared >= 4) { popAnim('vLines'); popAnim('mLines'); }
 }
 
 function spawn() {
@@ -514,38 +623,31 @@ function spawn() {
   if (hits(cur.shape, cur.x, cur.y)) endGame();
 }
 
-// Move current piece; returns true on success
 function move(dx, dy) {
   if (!running || paused || !cur) return false;
   if (hits(cur.shape, cur.x + dx, cur.y + dy)) return false;
-  cur.x += dx;
-  cur.y += dy;
-  render();
-  return true;
+  cur.x += dx; cur.y += dy;
+  render(); return true;
 }
 
 function tryRotate() {
   if (!running || paused || !cur) return;
   const rsh = rotateCW(cur.shape);
-  // Wall-kick: try original position, then ±1, ±2 columns
-  for (const kick of [0, 1, -1, 2, -2]) {
-    if (!hits(rsh, cur.x + kick, cur.y)) {
-      cur.shape = rsh;
-      cur.x    += kick;
-      render();
-      return;
+  for (const k of [0, 1, -1, 2, -2]) {
+    if (!hits(rsh, cur.x + k, cur.y)) {
+      cur.shape = rsh; cur.x += k;
+      render(); return;
     }
   }
 }
 
 function hardDrop() {
   if (!running || paused || !cur) return;
-  let dist = 0;
-  while (!hits(cur.shape, cur.x, cur.y + 1)) { cur.y++; dist++; }
-  score += dist * 2;   // 2 pts per hard-drop row (standard scoring)
+  let d = 0;
+  while (!hits(cur.shape, cur.x, cur.y + 1)) { cur.y++; d++; }
+  score += d * 2;
   updateHUD();
-  lock();
-  render();
+  lock(); render();
 }
 
 function tick() {
@@ -559,62 +661,43 @@ function restartTimer() {
   dropTimer = setInterval(tick, dropSpeed());
 }
 
-// ─── Overlay helpers ──────────────────────────────────────────────────────────
-function showOverlay(title, sub, finalTxt, btnTxt) {
-  $('oTitle').textContent = title;
-  $('oSub').textContent   = sub;
-  $('oSub').style.display = sub ? 'block' : 'none';
-  if (finalTxt !== null) {
-    $('oFinal').textContent   = finalTxt;
-    $('oFinal').style.display = 'block';
-  } else {
-    $('oFinal').style.display = 'none';
-  }
+// ─── Overlay ──────────────────────────────────────────────────────────────────
+function showOverlay(title, sub, fin, btnTxt) {
+  $('oTitle').textContent    = title;
+  $('oSub').textContent      = sub || '';
+  $('oSub').style.display    = sub ? 'block' : 'none';
+  $('oFinal').textContent    = fin || '';
+  $('oFinal').style.display  = fin ? 'block' : 'none';
   $('oBtn').textContent      = btnTxt;
   $('overlay').style.display = 'flex';
 }
+function hideOverlay() { $('overlay').style.display = 'none'; }
 
-function hideOverlay() {
-  $('overlay').style.display = 'none';
+// ─── Sync pause button label on mobile ────────────────────────────────────────
+function syncMobilePause() {
+  const b = $('tcPause');
+  if (!b) return;
+  b.textContent = (running && paused) ? '▶ \u00A0 LANJUT' : '⏸ \u00A0 JEDA / LANJUT';
 }
 
 // ─── Game flow ────────────────────────────────────────────────────────────────
 function startGame() {
-  board     = makeBoard();
-  score     = 0;
-  lineCount = 0;
-  level     = 1;
-  prevLevel = 1;
-  paused    = false;
-  running   = true;
-
+  board = makeBoard(); score = 0; lineCount = 0; level = 1;
+  paused = false; running = true;
   $('pauseBtn').classList.add('on');
   $('pauseBtn').textContent = 'JEDA';
   $('pauseNote').classList.remove('on');
-
-  hideOverlay();
-  updateHUD();
-
-  nxt = randPiece();
-  spawn();
-  restartTimer();
-  renderLoop();
+  syncMobilePause();
+  hideOverlay(); updateHUD();
+  nxt = randPiece(); spawn(); restartTimer(); renderLoop();
 }
 
 function endGame() {
-  clearInterval(dropTimer);
-  running = false;
-  render();  // draw final board state
-
+  clearInterval(dropTimer); running = false; render();
   $('pauseBtn').classList.remove('on');
   $('pauseNote').classList.remove('on');
-
-  showOverlay(
-    'GAME OVER',
-    '',
-    'Skor: ' + score.toLocaleString('id-ID'),
-    'MAIN LAGI'
-  );
+  syncMobilePause();
+  showOverlay('GAME OVER', '', 'Skor: ' + score.toLocaleString('id-ID'), 'MAIN LAGI');
 }
 
 function togglePause() {
@@ -622,6 +705,7 @@ function togglePause() {
   paused = !paused;
   $('pauseBtn').textContent = paused ? 'LANJUT' : 'JEDA';
   $('pauseNote').classList.toggle('on', paused);
+  syncMobilePause();
   if (!paused) render();
 }
 
@@ -632,47 +716,95 @@ function renderLoop() {
   requestAnimationFrame(renderLoop);
 }
 
-// ─── Keyboard input ───────────────────────────────────────────────────────────
+// ─── Keyboard ─────────────────────────────────────────────────────────────────
 document.addEventListener('keydown', e => {
   switch (e.key) {
-    case 'ArrowLeft':
-      e.preventDefault();
-      move(-1, 0);
-      break;
-    case 'ArrowRight':
-      e.preventDefault();
-      move(1, 0);
-      break;
+    case 'ArrowLeft':  e.preventDefault(); move(-1, 0); break;
+    case 'ArrowRight': e.preventDefault(); move( 1, 0); break;
     case 'ArrowDown':
       e.preventDefault();
-      // Soft drop: move 1 row, 1 pt per row
-      if (running && !paused && cur) {
-        if (move(0, 1)) { score += 1; updateHUD(); }
-      }
+      if (running && !paused && cur && move(0, 1)) { score++; updateHUD(); }
       break;
-    case 'ArrowUp':
-      e.preventDefault();
-      tryRotate();
-      break;
-    case ' ':
-      e.preventDefault();
-      hardDrop();
-      break;
-    case 'p':
-    case 'P':
-      togglePause();
-      break;
-    case 'Enter':
-      if (!running) startGame();
-      break;
+    case 'ArrowUp': e.preventDefault(); tryRotate(); break;
+    case ' ':       e.preventDefault(); hardDrop();  break;
+    case 'p': case 'P': togglePause(); break;
+    case 'Enter': if (!running) startGame(); break;
   }
 });
 
-// ─── Boot ─────────────────────────────────────────────────────────────────────
+// ─── Touch controls with auto-repeat ──────────────────────────────────────────
+let rptTimer = null, rptIval = null;
+
+function startRepeat(fn) {
+  fn();
+  rptTimer = setTimeout(() => { rptIval = setInterval(fn, 85); }, 220);
+}
+function stopRepeat() {
+  clearTimeout(rptTimer); clearInterval(rptIval);
+  rptTimer = rptIval = null;
+}
+
+// Bind a button that repeats while held (good for move left/right/down)
+function bindHold(id, fn) {
+  const el = $(id);
+  if (!el) return;
+  const dn = e => { e.preventDefault(); el.classList.add('held'); startRepeat(fn); };
+  const up = e => { e.preventDefault(); el.classList.remove('held'); stopRepeat(); };
+  el.addEventListener('touchstart',  dn, { passive: false });
+  el.addEventListener('touchend',    up, { passive: false });
+  el.addEventListener('touchcancel', up, { passive: false });
+  el.addEventListener('mousedown', dn);
+  el.addEventListener('mouseup',   up);
+  el.addEventListener('mouseleave',up);
+}
+
+// Bind a button that fires once per tap (rotate, hard drop, pause)
+function bindTap(id, fn) {
+  const el = $(id);
+  if (!el) return;
+  el.addEventListener('touchstart', e => {
+    e.preventDefault(); el.classList.add('held'); fn();
+  }, { passive: false });
+  el.addEventListener('touchend', e => {
+    e.preventDefault(); el.classList.remove('held');
+  }, { passive: false });
+  el.addEventListener('mousedown', e => { e.preventDefault(); fn(); });
+}
+
+bindHold('tcLeft',  () => move(-1, 0));
+bindHold('tcRight', () => move( 1, 0));
+bindHold('tcDown', () => {
+  if (running && !paused && cur && move(0, 1)) { score++; updateHUD(); }
+});
+bindTap('tcRot',   tryRotate);
+bindTap('tcDrop',  hardDrop);
+bindTap('tcPause', togglePause);
+
+// ─── Canvas tap → rotate (quick tap anywhere on the board) ───────────────────
+let tapX = 0, tapY = 0;
+cvs.addEventListener('touchstart', e => {
+  e.preventDefault();
+  tapX = e.touches[0].clientX;
+  tapY = e.touches[0].clientY;
+}, { passive: false });
+
+cvs.addEventListener('touchend', e => {
+  e.preventDefault();
+  const dx = Math.abs(e.changedTouches[0].clientX - tapX);
+  const dy = Math.abs(e.changedTouches[0].clientY - tapY);
+  // Only fire rotate on a clean tap (finger moved < 10 px)
+  if (dx < 10 && dy < 10 && running && !paused) tryRotate();
+}, { passive: false });
+
+// Block long-press context menu on mobile
+document.addEventListener('contextmenu', e => e.preventDefault());
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
 (function init() {
   board   = makeBoard();
   hiScore = parseInt(localStorage.getItem('lf_hi') || '0', 10) || 0;
-  $('vHi').textContent = hiScore.toLocaleString('id-ID');
+  setEl('vHi', hiScore.toLocaleString('id-ID'));
+  setEl('mHi', hiScore.toLocaleString('id-ID'));
   render();
   renderNext();
   showOverlay('LOGIC FRAME', 'Tekan MULAI untuk bermain', null, 'MULAI');
