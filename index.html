@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LOGIC FRAME — Susun Bata</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #07070f;
+      --panel:   #0d0d1c;
+      --border:  #1a1a32;
+      --accent:  #4455ee;
+      --txt:     #aaaadd;
+      --dim:     #3a3a66;
+    }
+
+    body {
+      background: var(--bg);
+      background-image:
+        radial-gradient(ellipse at 15% 15%, rgba(55,0,110,0.22) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 85%, rgba(0,35,100,0.22) 0%, transparent 55%);
+      color: var(--txt);
+      font-family: 'Press Start 2P', monospace, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      user-select: none;
+      padding: 16px;
+    }
+
+    /* ── Header ─────────────────────────────────────────── */
+    header { text-align: center; margin-bottom: 18px; }
+    header h1 {
+      font-size: clamp(0.75rem, 2.4vw, 1.35rem);
+      letter-spacing: 0.45em;
+      color: #fff;
+      text-shadow: 0 0 10px #4466ff, 0 0 28px #4466ff;
+    }
+    header p {
+      font-size: clamp(0.32rem, 0.9vw, 0.46rem);
+      letter-spacing: 0.65em;
+      color: var(--dim);
+      margin-top: 7px;
+    }
+
+    /* ── Main layout ─────────────────────────────────────── */
+    .wrapper { display: flex; gap: 16px; align-items: flex-start; }
+
+    /* ── Side panels ─────────────────────────────────────── */
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      width: 128px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .lbl {
+      font-size: 0.38rem;
+      letter-spacing: 0.2em;
+      color: var(--dim);
+      margin-bottom: 5px;
+    }
+    .val {
+      font-size: clamp(0.65rem, 1.8vw, 0.95rem);
+      color: #fff;
+      text-shadow: 0 0 8px #4466ff;
+      min-height: 1.1em;
+    }
+    hr.sep { border: none; border-top: 1px solid var(--border); }
+
+    /* ── Canvas area ─────────────────────────────────────── */
+    .cvs-wrap { position: relative; flex-shrink: 0; }
+
+    #gameCanvas {
+      display: block;
+      border: 2px solid var(--border);
+      border-radius: 4px;
+      box-shadow: 0 0 28px rgba(68,68,221,0.18), inset 0 0 30px rgba(0,0,0,0.55);
+    }
+
+    /* ── Overlay ─────────────────────────────────────────── */
+    #overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      background: rgba(7,7,15,0.90);
+      border-radius: 3px;
+      backdrop-filter: blur(4px);
+    }
+    #overlay h2 {
+      font-size: clamp(0.65rem, 2.2vw, 0.95rem);
+      letter-spacing: 0.18em;
+      text-align: center;
+      text-shadow: 0 0 14px #fff;
+    }
+    #overlay .sub {
+      font-size: 0.42rem;
+      color: var(--dim);
+      text-align: center;
+      line-height: 2.1;
+    }
+    #overlay .final {
+      font-size: 0.6rem;
+      color: #ffd700;
+      text-shadow: 0 0 10px #ffd700;
+    }
+
+    /* ── Buttons ─────────────────────────────────────────── */
+    .btn {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.52rem;
+      padding: 10px 22px;
+      background: transparent;
+      border: 2px solid var(--accent);
+      color: #fff;
+      border-radius: 4px;
+      cursor: pointer;
+      letter-spacing: 0.1em;
+      transition: background 0.15s, box-shadow 0.15s;
+      text-shadow: 0 0 6px var(--accent);
+      box-shadow: 0 0 8px rgba(68,68,221,0.28);
+    }
+    .btn:hover  { background: var(--accent); box-shadow: 0 0 18px var(--accent); }
+    .btn:active { transform: scale(0.97); }
+
+    /* ── Next piece canvas ───────────────────────────────── */
+    #nextCvs { display: block; margin-top: 6px; background: #0a0a14; border-radius: 3px; }
+
+    /* ── Controls table ──────────────────────────────────── */
+    .ctrl { font-size: 0.36rem; color: var(--dim); line-height: 2.4; }
+    .ctrl kbd {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.34rem;
+      background: var(--border);
+      border: 1px solid var(--dim);
+      border-radius: 3px;
+      padding: 1px 4px;
+      color: var(--txt);
+    }
+
+    /* ── Pause notice ────────────────────────────────────── */
+    #pauseNote {
+      font-size: 0.38rem;
+      color: #ffd700;
+      text-align: center;
+      text-shadow: 0 0 8px #ffd700;
+      display: none;
+    }
+    #pauseNote.on  { display: block; }
+    #pauseBtn      { display: none; }
+    #pauseBtn.on   { display: block; }
+
+    /* ── Score flash animation ───────────────────────────── */
+    @keyframes pop {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.18); color: #ffd700; text-shadow: 0 0 12px #ffd700; }
+      100% { transform: scale(1); }
+    }
+    .pop { animation: pop 0.35s ease; }
+
+    /* ── Scanline overlay ────────────────────────────────── */
+    .cvs-wrap::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 2px,
+        rgba(0,0,0,0.06) 2px,
+        rgba(0,0,0,0.06) 4px
+      );
+      pointer-events: none;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>LOGIC FRAME</h1>
+  <p>S U S U N &nbsp;&nbsp; B A T A</p>
+</header>
+
+<div class="wrapper">
+
+  <!-- ── Left panel ───────────────────────────────────── -->
+  <div class="panel">
+    <div>
+      <div class="lbl">SKOR</div>
+      <div class="val" id="vScore">0</div>
+    </div>
+    <hr class="sep">
+    <div>
+      <div class="lbl">LEVEL</div>
+      <div class="val" id="vLevel">1</div>
+    </div>
+    <hr class="sep">
+    <div>
+      <div class="lbl">BARIS</div>
+      <div class="val" id="vLines">0</div>
+    </div>
+    <hr class="sep">
+    <div>
+      <div class="lbl">REKOR</div>
+      <div class="val" id="vHi">0</div>
+    </div>
+    <hr class="sep">
+    <div id="pauseNote">— JEDA —</div>
+    <button class="btn" id="pauseBtn" onclick="togglePause()">JEDA</button>
+  </div>
+
+  <!-- ── Game canvas ──────────────────────────────────── -->
+  <div class="cvs-wrap">
+    <canvas id="gameCanvas"></canvas>
+    <div id="overlay">
+      <h2 id="oTitle">LOGIC FRAME</h2>
+      <div class="sub" id="oSub">Tekan MULAI<br>untuk bermain</div>
+      <div class="final" id="oFinal" style="display:none"></div>
+      <button class="btn" id="oBtn" onclick="startGame()">MULAI</button>
+    </div>
+  </div>
+
+  <!-- ── Right panel ──────────────────────────────────── -->
+  <div class="panel">
+    <div>
+      <div class="lbl">BERIKUTNYA</div>
+      <canvas id="nextCvs" width="108" height="86"></canvas>
+    </div>
+    <hr class="sep">
+    <div>
+      <div class="lbl">KONTROL</div>
+      <div class="ctrl">
+        <div><kbd>←</kbd> <kbd>→</kbd> Geser</div>
+        <div><kbd>↑</kbd> Putar</div>
+        <div><kbd>↓</kbd> Cepat turun</div>
+        <div><kbd>SPC</kbd> Jatuh seketika</div>
+        <div><kbd>P</kbd> Jeda / Lanjut</div>
+      </div>
+    </div>
+    <hr class="sep">
+    <div>
+      <div class="lbl">SKOR BARIS</div>
+      <div class="ctrl" style="line-height:2.2">
+        <div>1 baris = 100</div>
+        <div>2 baris = 300</div>
+        <div>3 baris = 500</div>
+        <div>4 baris = 800</div>
+        <div style="color:var(--txt)">× level</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- .wrapper -->
+
+<script>
+"use strict";
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+const COLS = 10;
+const ROWS = 20;
+const BS   = 30;   // block size (px)
+const GAP  = 1;    // gap between adjacent blocks
+
+// Tetrominoes — shape matrices use 1 = block, 0 = empty
+const PIECES = [
+  { id:'I', clr:'#00e5ff', shape:[[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]] },
+  { id:'O', clr:'#ffd600', shape:[[1,1],[1,1]] },
+  { id:'T', clr:'#ea80fc', shape:[[0,1,0],[1,1,1],[0,0,0]] },
+  { id:'S', clr:'#00e676', shape:[[0,1,1],[1,1,0],[0,0,0]] },
+  { id:'Z', clr:'#ff5252', shape:[[1,1,0],[0,1,1],[0,0,0]] },
+  { id:'J', clr:'#448aff', shape:[[1,0,0],[1,1,1],[0,0,0]] },
+  { id:'L', clr:'#ffab40', shape:[[0,0,1],[1,1,1],[0,0,0]] },
+];
+
+const LINE_PTS = [0, 100, 300, 500, 800];  // points per lines-cleared count
+
+// ─── Canvas / context ─────────────────────────────────────────────────────────
+const cvs  = document.getElementById('gameCanvas');
+const ctx  = cvs.getContext('2d');
+const ncvs = document.getElementById('nextCvs');
+const nctx = ncvs.getContext('2d');
+
+cvs.width  = COLS * BS;
+cvs.height = ROWS * BS;
+
+// ─── Game state ───────────────────────────────────────────────────────────────
+let board;        // ROWS × COLS array of color strings (null = empty)
+let cur;          // current falling piece  { p, shape, x, y }
+let nxt;          // next piece
+let score, hiScore, level, lineCount;
+let running, paused;
+let dropTimer;
+let prevLevel;
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+
+function makeBoard() {
+  return Array.from({ length: ROWS }, () => new Array(COLS).fill(null));
+}
+
+function randPiece() {
+  const p = PIECES[Math.floor(Math.random() * PIECES.length)];
+  return {
+    p,
+    shape: p.shape.map(r => [...r]),
+    x: Math.floor((COLS - p.shape[0].length) / 2),
+    y: 0
+  };
+}
+
+function rotateCW(shape) {
+  const R = shape.length, C = shape[0].length;
+  return Array.from({ length: C }, (_, c) =>
+    Array.from({ length: R }, (_, r) => shape[R - 1 - r][c])
+  );
+}
+
+// Returns true if shape at offset (ox, oy) collides with walls or placed blocks
+function hits(shape, ox, oy) {
+  for (let r = 0; r < shape.length; r++)
+    for (let c = 0; c < shape[r].length; c++) {
+      if (!shape[r][c]) continue;
+      const nx = ox + c, ny = oy + r;
+      if (nx < 0 || nx >= COLS || ny >= ROWS) return true;
+      if (ny >= 0 && board[ny][nx])           return true;
+    }
+  return false;
+}
+
+function dropSpeed() {
+  // 800 ms at level 1, −65 ms per level, floor 80 ms
+  return Math.max(80, 800 - (level - 1) * 65);
+}
+
+// ─── Rendering ────────────────────────────────────────────────────────────────
+function drawBlock(ctx2d, x, y, color, alpha) {
+  alpha = alpha === undefined ? 1 : alpha;
+  const px = x * BS + GAP;
+  const py = y * BS + GAP;
+  const sz = BS - GAP * 2;
+
+  ctx2d.save();
+  ctx2d.globalAlpha = alpha;
+
+  // Main fill
+  ctx2d.fillStyle = color;
+  ctx2d.fillRect(px, py, sz, sz);
+
+  // Top & left bevel (highlight)
+  ctx2d.fillStyle = 'rgba(255,255,255,0.32)';
+  ctx2d.fillRect(px,      py,      sz, 3);
+  ctx2d.fillRect(px,      py,      3,  sz);
+
+  // Bottom & right bevel (shadow)
+  ctx2d.fillStyle = 'rgba(0,0,0,0.42)';
+  ctx2d.fillRect(px,      py + sz - 3, sz, 3);
+  ctx2d.fillRect(px + sz - 3, py,      3,  sz);
+
+  // Glow outline
+  ctx2d.shadowColor = color;
+  ctx2d.shadowBlur  = 10;
+  ctx2d.strokeStyle = color;
+  ctx2d.lineWidth   = 0.5;
+  ctx2d.strokeRect(px + 0.5, py + 0.5, sz - 1, sz - 1);
+
+  ctx2d.restore();
+}
+
+function drawGhost() {
+  if (!cur) return;
+  let gy = cur.y;
+  while (!hits(cur.shape, cur.x, gy + 1)) gy++;
+  if (gy === cur.y) return;
+  for (let r = 0; r < cur.shape.length; r++)
+    for (let c = 0; c < cur.shape[r].length; c++)
+      if (cur.shape[r][c])
+        drawBlock(ctx, cur.x + c, gy + r, cur.p.clr, 0.14);
+}
+
+function render() {
+  // Board background
+  ctx.fillStyle = '#090912';
+  ctx.fillRect(0, 0, cvs.width, cvs.height);
+
+  // Subtle dot grid
+  ctx.fillStyle = 'rgba(255,255,255,0.035)';
+  for (let r = 0; r < ROWS; r++)
+    for (let c = 0; c < COLS; c++)
+      ctx.fillRect(c * BS + BS / 2, r * BS + BS / 2, 1.5, 1.5);
+
+  // Placed blocks
+  for (let r = 0; r < ROWS; r++)
+    for (let c = 0; c < COLS; c++)
+      if (board[r][c]) drawBlock(ctx, c, r, board[r][c]);
+
+  // Ghost piece
+  drawGhost();
+
+  // Current piece
+  if (cur)
+    for (let r = 0; r < cur.shape.length; r++)
+      for (let c = 0; c < cur.shape[r].length; c++)
+        if (cur.shape[r][c] && cur.y + r >= 0)
+          drawBlock(ctx, cur.x + c, cur.y + r, cur.p.clr);
+}
+
+function renderNext() {
+  nctx.fillStyle = '#090912';
+  nctx.fillRect(0, 0, ncvs.width, ncvs.height);
+  if (!nxt) return;
+  const sh = nxt.p.shape;
+  const nb = 22;
+  const ox = Math.floor((ncvs.width  - sh[0].length * nb) / 2);
+  const oy = Math.floor((ncvs.height - sh.length    * nb) / 2);
+  sh.forEach((row, r) => row.forEach((v, c) => {
+    if (!v) return;
+    const px = ox + c * nb + 1;
+    const py = oy + r * nb + 1;
+    const sz = nb - 2;
+    nctx.save();
+    nctx.fillStyle = nxt.p.clr;
+    nctx.fillRect(px, py, sz, sz);
+    nctx.fillStyle = 'rgba(255,255,255,0.28)';
+    nctx.fillRect(px, py, sz, 3);
+    nctx.shadowColor = nxt.p.clr;
+    nctx.shadowBlur  = 8;
+    nctx.strokeStyle = nxt.p.clr;
+    nctx.lineWidth   = 0.6;
+    nctx.strokeRect(px + 0.5, py + 0.5, sz - 1, sz - 1);
+    nctx.restore();
+  }));
+}
+
+// ─── HUD ──────────────────────────────────────────────────────────────────────
+function updateHUD() {
+  $('vScore').textContent = score.toLocaleString('id-ID');
+  $('vLevel').textContent = level;
+  $('vLines').textContent = lineCount;
+  if (score > hiScore) {
+    hiScore = score;
+    try { localStorage.setItem('lf_hi', String(hiScore)); } catch (_) {}
+  }
+  $('vHi').textContent = hiScore.toLocaleString('id-ID');
+}
+
+function popAnim(elId) {
+  const el = $(elId);
+  el.classList.remove('pop');
+  void el.offsetWidth;   // reflow to restart animation
+  el.classList.add('pop');
+}
+
+// ─── Mechanics ────────────────────────────────────────────────────────────────
+function lock() {
+  // Write current piece into the board
+  for (let r = 0; r < cur.shape.length; r++)
+    for (let c = 0; c < cur.shape[r].length; c++) {
+      if (!cur.shape[r][c]) continue;
+      const ny = cur.y + r, nx = cur.x + c;
+      if (ny < 0) { endGame(); return; }
+      board[ny][nx] = cur.p.clr;
+    }
+  sweep();
+  spawn();
+}
+
+function sweep() {
+  let cleared = 0;
+  for (let r = ROWS - 1; r >= 0; r--) {
+    if (board[r].every(v => v !== null)) {
+      board.splice(r, 1);
+      board.unshift(new Array(COLS).fill(null));
+      cleared++;
+      r++;  // re-examine same index (now holds the row that was above)
+    }
+  }
+  if (cleared === 0) return;
+
+  score     += LINE_PTS[cleared] * level;
+  lineCount += cleared;
+
+  const newLevel = Math.floor(lineCount / 10) + 1;
+  if (newLevel !== level) {
+    level = newLevel;
+    prevLevel = level;
+    restartTimer();   // faster speed
+  }
+
+  updateHUD();
+  popAnim('vScore');
+  if (cleared >= 4) popAnim('vLines');
+}
+
+function spawn() {
+  cur = nxt || randPiece();
+  nxt = randPiece();
+  renderNext();
+  if (hits(cur.shape, cur.x, cur.y)) endGame();
+}
+
+// Move current piece; returns true on success
+function move(dx, dy) {
+  if (!running || paused || !cur) return false;
+  if (hits(cur.shape, cur.x + dx, cur.y + dy)) return false;
+  cur.x += dx;
+  cur.y += dy;
+  render();
+  return true;
+}
+
+function tryRotate() {
+  if (!running || paused || !cur) return;
+  const rsh = rotateCW(cur.shape);
+  // Wall-kick: try original position, then ±1, ±2 columns
+  for (const kick of [0, 1, -1, 2, -2]) {
+    if (!hits(rsh, cur.x + kick, cur.y)) {
+      cur.shape = rsh;
+      cur.x    += kick;
+      render();
+      return;
+    }
+  }
+}
+
+function hardDrop() {
+  if (!running || paused || !cur) return;
+  let dist = 0;
+  while (!hits(cur.shape, cur.x, cur.y + 1)) { cur.y++; dist++; }
+  score += dist * 2;   // 2 pts per hard-drop row (standard scoring)
+  updateHUD();
+  lock();
+  render();
+}
+
+function tick() {
+  if (!running || paused) return;
+  if (!move(0, 1)) lock();
+}
+
+// ─── Timer ────────────────────────────────────────────────────────────────────
+function restartTimer() {
+  clearInterval(dropTimer);
+  dropTimer = setInterval(tick, dropSpeed());
+}
+
+// ─── Overlay helpers ──────────────────────────────────────────────────────────
+function showOverlay(title, sub, finalTxt, btnTxt) {
+  $('oTitle').textContent = title;
+  $('oSub').textContent   = sub;
+  $('oSub').style.display = sub ? 'block' : 'none';
+  if (finalTxt !== null) {
+    $('oFinal').textContent   = finalTxt;
+    $('oFinal').style.display = 'block';
+  } else {
+    $('oFinal').style.display = 'none';
+  }
+  $('oBtn').textContent      = btnTxt;
+  $('overlay').style.display = 'flex';
+}
+
+function hideOverlay() {
+  $('overlay').style.display = 'none';
+}
+
+// ─── Game flow ────────────────────────────────────────────────────────────────
+function startGame() {
+  board     = makeBoard();
+  score     = 0;
+  lineCount = 0;
+  level     = 1;
+  prevLevel = 1;
+  paused    = false;
+  running   = true;
+
+  $('pauseBtn').classList.add('on');
+  $('pauseBtn').textContent = 'JEDA';
+  $('pauseNote').classList.remove('on');
+
+  hideOverlay();
+  updateHUD();
+
+  nxt = randPiece();
+  spawn();
+  restartTimer();
+  renderLoop();
+}
+
+function endGame() {
+  clearInterval(dropTimer);
+  running = false;
+  render();  // draw final board state
+
+  $('pauseBtn').classList.remove('on');
+  $('pauseNote').classList.remove('on');
+
+  showOverlay(
+    'GAME OVER',
+    '',
+    'Skor: ' + score.toLocaleString('id-ID'),
+    'MAIN LAGI'
+  );
+}
+
+function togglePause() {
+  if (!running) return;
+  paused = !paused;
+  $('pauseBtn').textContent = paused ? 'LANJUT' : 'JEDA';
+  $('pauseNote').classList.toggle('on', paused);
+  if (!paused) render();
+}
+
+// ─── Render loop ──────────────────────────────────────────────────────────────
+function renderLoop() {
+  if (!running) return;
+  render();
+  requestAnimationFrame(renderLoop);
+}
+
+// ─── Keyboard input ───────────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  switch (e.key) {
+    case 'ArrowLeft':
+      e.preventDefault();
+      move(-1, 0);
+      break;
+    case 'ArrowRight':
+      e.preventDefault();
+      move(1, 0);
+      break;
+    case 'ArrowDown':
+      e.preventDefault();
+      // Soft drop: move 1 row, 1 pt per row
+      if (running && !paused && cur) {
+        if (move(0, 1)) { score += 1; updateHUD(); }
+      }
+      break;
+    case 'ArrowUp':
+      e.preventDefault();
+      tryRotate();
+      break;
+    case ' ':
+      e.preventDefault();
+      hardDrop();
+      break;
+    case 'p':
+    case 'P':
+      togglePause();
+      break;
+    case 'Enter':
+      if (!running) startGame();
+      break;
+  }
+});
+
+// ─── Boot ─────────────────────────────────────────────────────────────────────
+(function init() {
+  board   = makeBoard();
+  hiScore = parseInt(localStorage.getItem('lf_hi') || '0', 10) || 0;
+  $('vHi').textContent = hiScore.toLocaleString('id-ID');
+  render();
+  renderNext();
+  showOverlay('LOGIC FRAME', 'Tekan MULAI untuk bermain', null, 'MULAI');
+})();
+</script>
+</body>
+</html>
